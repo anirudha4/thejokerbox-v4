@@ -1,13 +1,18 @@
-import { BrowserRouter, Switch, Route  } from 'react-router-dom';
+import { BrowserRouter, Routes, Route  } from 'react-router-dom';
 import For from "@components/common/For"
 import { routeConfig } from "./route.config"
 import Navbar from '@components/common/Navbar';
+import 'antd/dist/antd.css';
+import { useContext } from 'react';
+import { AuthContext } from '@contexts/AuthStore';
+
 function App() {
-  return (
+  const { user, logout } = useContext(AuthContext);
+  return ( 
     <BrowserRouter>
-      <Navbar />
+      <Navbar user={user} logout={logout} />
       <For 
-        Parent={props => <Switch {...props} />}
+        Parent={props => <Routes {...props} />}
         items={Object.keys(routeConfig)}
         renderItem={(routeKey, index) => {
           const Component = routeConfig[routeKey].component;
@@ -16,15 +21,7 @@ function App() {
               path={routeConfig[routeKey].route}
               exact={routeConfig[routeKey].exact}
               key={index}
-              render={props => {
-                const updatedProps = {
-                  ...props,
-                  ...routeConfig[routeKey].props
-                }
-                return (
-                  <Component {...updatedProps} />
-                )
-              }}
+              element={<Component />}
             />
           )
         }}

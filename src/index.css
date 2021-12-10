@@ -19,3 +19,24 @@ body {
 a {
     text-decoration: none;
 }
+
+/* antd */
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
+    background-color: #EBF0FF !important;
+}
+.ant-menu-item a {
+    font-weight: bold;
+}
+.ant-menu-item a:hover {
+    color: #0047FF !important;
+}
+.ant-menu-item-selected a, .ant-menu-item-selected a:hover {
+    color: #0047FF !important;
+}
+
+.ant-dropdown-menu-title-content {
+    font-weight: bold !important;
+}
+.ant-menu-title-content {
+    font-weight: bold !important;
+}

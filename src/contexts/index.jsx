@@ -1,12 +1,15 @@
 import React from 'react'
+import AuthStore from './AuthStore'
 import HomeStoreProvider from './HomeStore'
 
 export default function ContextWrapper({children}) {
     return (
         <>
-            <HomeStoreProvider>
-                {children}
-            </HomeStoreProvider>
+            <AuthStore>
+                <HomeStoreProvider>
+                    {children}
+                </HomeStoreProvider>
+            </AuthStore>
         </>
     )
 }

@@ -3,10 +3,8 @@ export default {
       route: '/',
       exact: true
     },
-    about: {
-      route: '/about',
-      props: {
-        title: 'This is about page'
-      }
-    }
+    dashboard: {
+      route: '/dashboard/*',
+      exact: true
+    },
   };

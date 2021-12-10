@@ -1,14 +1,14 @@
 import Home from "@pages/Home";
+import Dashboard from "@pages/Dashboard";
 import routeConstants from "@utils/routeConstants";
-import About from "@pages/About";
 
 export const routeConfig = {
     home: {
         component: Home,
         ...routeConstants.home
     },
-    about: {
-        component: About,
-        ...routeConstants.about
+    dashboard: {
+        component: Dashboard,
+        ...routeConstants.dashboard
     }
 }

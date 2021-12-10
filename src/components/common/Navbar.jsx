@@ -1,45 +1,66 @@
 import React from 'react'
-import styled from 'styled-components';
-import { NavLink } from 'react-router-dom';
-import { Container, FlexBetween } from '@components/custom';
-import logo from '@assets/logo.svg';
-import { colors, styles } from '@themes';
+import styled from 'styled-components'
+import logo from '@assets/logo.svg'
+import userImg from '@assets/user-icon.svg'
+import { Container, FlexBetween, MenuItem } from '@components/custom';
+import { colors, fonts } from '@themes';
+import { Dropdown, Menu } from 'antd';
 
 const NavContainer = styled.div`
-    background-color: ${colors.white};
-    box-shadow: ${styles.boxShadow};
-`;
-const Logo = styled(NavLink)`
-`;
+    padding: 20px 0;
+    border-bottom: 2px solid ${colors.greyLight};
+`
+const Right = styled.div`
 
-const Links = styled.div`
 `;
-
-const Link = styled(NavLink)`
-    display: inline-block;
-    padding: 1.2em 1em;
-    outline: none;
-    color: ${colors.text};
-    transition: all .2s;
-    border-bottom: 3px solid transparent;
-    &.active {
-        border-bottom: 3px solid ${colors.primary};
-        color: ${colors.primary};
+const UserProfileThumbnail = styled.div`
+    height: 40px;
+    width: 40px;
+    border-radius: 50px;
+    border: 2px solid ${colors.greyLight};
+    display: flex;
+    align-items: center;
+    background-color: ${colors.primaryLight};
+    justify-content: center;
+    cursor: pointer;
+    img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
     }
 `;
 
-export default function Navbar() {
+export default function Navbar({ user, logout }) {
+    const profileOverlay = () => (
+        <Menu style={{ width: '15rem' }}>
+            <MenuItem>
+                Profile
+            </MenuItem>
+            <MenuItem>
+                Files
+            </MenuItem>
+            <MenuItem>
+                Account Settings
+            </MenuItem>
+            <MenuItem danger onClick={async e => await logout()}>
+                Logout
+            </MenuItem>
+        </Menu>
+    )
     return (
         <NavContainer>
             <Container>
                 <FlexBetween>
-                    <Logo to="/">
-                        <img width="120" src={logo} alt="logo" />
-                    </Logo>
-                    <Links>
-                        <Link exact to="/">Home</Link>
-                        <Link to="/about">About</Link>
-                    </Links>
+                    <img src={logo} width={120} alt="" />
+                    <Right>
+                        {user && (
+                            <Dropdown overlay={profileOverlay} trigger={['click']}>
+                                <UserProfileThumbnail>
+                                    <img src={userImg} width="50px" height="50px" alt="" />
+                                </UserProfileThumbnail>
+                            </Dropdown>
+                        )}
+                    </Right>
                 </FlexBetween>
             </Container>
         </NavContainer>
