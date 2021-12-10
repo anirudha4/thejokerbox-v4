@@ -82,7 +82,6 @@ export const Button = styled.button`
     border-radius: ${styles.borderRadius};
     cursor: pointer;
     transition: all .2s;
-    box-shadow: ${styles.boxShadow};
     width: ${props => props.width};
     font-size: ${props => fonts[props.size]};
     &:hover {

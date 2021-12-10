@@ -1,6 +1,6 @@
 import axios from 'axios';
-// https://api.github.com/search/repositories?q={query}{&page,per_page,sort,order}
-const BASE_URL = 'https://api.github.com/search'
+
+const BASE_URL = 'https://us-central1-thejokerbox-v0.cloudfunctions.net/'
 
 const api = axios.create({
     baseURL: BASE_URL,

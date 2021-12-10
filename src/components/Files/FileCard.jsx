@@ -43,7 +43,7 @@ export default function FileCard({ file }) {
         >
             <Meta
                 avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                title={file.filename}
+                title={file.name}
                 description={file.size}
             />
             <div style={{ position: 'absolute',  top: 10, right: 10 }}>
