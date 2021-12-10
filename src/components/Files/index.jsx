@@ -53,6 +53,7 @@ const UploadLayer = styled.label`
 `;
 const File = styled(Card)`
     margin: 1.5em 0;
+    border-radius: ${styles.borderRadius};
 `;
 const UploadList = styled.div`
     max-height: 300px;
