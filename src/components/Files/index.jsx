@@ -1,21 +1,23 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Card, Divider } from 'antd';
 import { motion } from 'framer-motion';
 import styled from 'styled-components'
-import { MdClose, MdAttachFile } from 'react-icons/md'
+import Loader from "react-loader-spinner";
+import { MdClose } from 'react-icons/md'
 import { HiFolderOpen } from 'react-icons/hi'
-import { Button, Flex, FlexBetween, Space } from '@components/custom'
+import { Button, FlexBetween, FlexCenter, Space } from '@components/custom'
 import FileCard from './FileCard';
 import For from '@components/common/For';
 import { colors, fonts, styles } from '@themes';
-import Avatar from 'antd/lib/avatar/avatar';
+import { FileContext } from '@contexts/FileStore';
+import LoaderOverlay from '@components/common/LoaderOverlay';
 
 const FilesContainer = styled.div`
-
+    
 `;
 const FileGrid = styled.div`
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
     gap: 20px;
 `;
 const UploadModal = styled.div`
@@ -67,14 +69,40 @@ const UploadList = styled.div`
         width: 100%;
     }
 `;
-
-
+const FileAvatar = styled(FlexCenter)`
+    height: 50px;
+    width: 50px;
+    div {
+        height: 40px;
+        width: 40px;
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-transform: uppercase;
+        background-color: tomato;
+        box-shadow: 5px 10px 10px 2px #f7d7d3;
+        color: white;
+        font-weight: bold;
+        border-radius: ${styles.borderRadius};
+    }
+`;
+const Extension = ({file}) => {
+    const exts = file.name.split('.');
+    return (
+        <FileAvatar>
+            <div>
+                {exts[exts.length - 1]}
+            </div>
+        </FileAvatar>
+    )
+}
 const FileToUpload = ({file, id, deleteFileFromLocalArray}) => {
     return (
         <File>
             <FlexBetween>
                 <FlexBetween>
-                    <Avatar src="https://joeschmoe.io/api/v1/random" />
+                    <Extension file={file} />
                     <Space right=".5em" />
                     <strong>{file.name}</strong>
                 </FlexBetween>
@@ -84,27 +112,51 @@ const FileToUpload = ({file, id, deleteFileFromLocalArray}) => {
     )
 }
 
-export default function Files() {
+export default function Files({ user, files, uploadFiles, getFiles, ...props }) {
+    const { deleteFile } = useContext(FileContext);
+    const [loading, setLoading] = useState(false);
     const [fileUploadModal, setFileUploadModal] = useState(false);
     const openFileModal = () => setFileUploadModal(true);
-    const [mockFiles, setMockFiles] = useState([])
-    const [files, setFiles] = useState([]);
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [uploading, setUploading] = useState(false)
     const deleteFileFromLocalArray = (id) => {
-        const filteredFiles = files.filter((_, idx) => id !== idx)
-        setFiles(filteredFiles);
+        const filteredFiles = selectedFiles.filter((_, idx) => id !== idx)
+        setSelectedFiles(filteredFiles);
     }
     const handleFileSelect = (e) => {
-        const file = e.target.files[0];
-        setFiles([...files, file])
-        console.log({ file });
+        const tempFiles = e.target.files;
+        setSelectedFiles([...selectedFiles, ...tempFiles])
     }
-    const handleUpload = () => {
-        setMockFiles([...mockFiles, ...files]);
-        setFiles([]);
+    const handleUpload = async () => {
+        setUploading(true)
+        const formData = new FormData();
+        if(selectedFiles.length === 1) {
+            formData.append('file', selectedFiles[0])
+        }
+        else {
+            selectedFiles.forEach(file => {
+                formData.append('arrayOfFiles', file);
+            });
+        }
+        formData.append('uid', user.uid);
+        await uploadFiles(formData);
+        setSelectedFiles([]);
+        await getFiles();
         setFileUploadModal(false);
+        setUploading(false);
+    }
+    const handleDelete = async (id) => {
+        try {
+            setLoading(true)
+            await deleteFile(id);
+            setLoading(false)
+        } catch(err) {
+            setLoading(false)
+        }
     }
     return (
         <FilesContainer>
+            {loading && <LoaderOverlay />}
             {fileUploadModal && (
                 <ModalCover as={motion.div} transition={{ duration: .3 }} initial={{ opacity: 0, y: -100 }} animate={{ opacity: 1, y: 0 }}>
                     <UploadModal>
@@ -116,7 +168,7 @@ export default function Files() {
                                 }
                             } size={24} />
                         </FlexBetween>
-                        <input onChange={handleFileSelect} type="file" id='file' style={{ display: 'none' }} />
+                        <input multiple onChange={handleFileSelect} type="file" id='file' style={{ display: 'none' }} />
                         <Space top="2em" />
                         <UploadLayer htmlFor="file">
                             <HiFolderOpen size={30} />
@@ -126,7 +178,7 @@ export default function Files() {
                         <Space top="1em" />
                         <For 
                             Parent={UploadList}
-                            items={files}
+                            items={selectedFiles}
                             renderItem={(file, idx) => {
                                 return (
                                     <FileToUpload deleteFileFromLocalArray={deleteFileFromLocalArray} file={file} id={idx} />
@@ -134,7 +186,14 @@ export default function Files() {
                             }}
                         />
                         <Space top="1.5em" />
-                        <Button disabled={!files.length} onClick={handleUpload} type='primary' width="100%">Upload</Button>
+                        <Button disabled={!selectedFiles.length} onClick={handleUpload} type='primary' width="100%">{uploading ? (
+                            <Loader 
+                                type="TailSpin"
+                                color={colors.primaryLight}
+                                height={20}
+                                width={20}
+                            />
+                        ) : 'Upload' }</Button>
                     </UploadModal>
                 </ModalCover>
             )}
@@ -144,13 +203,13 @@ export default function Files() {
             </FlexBetween>
             <Space top="1.5em" />
             <Divider />
-            {!!mockFiles.length ? (
+            {files?.length ? (
                 <For 
                     Parent={FileGrid}
-                    items={mockFiles}
+                    items={files}
                     renderItem={(item, key) => {
                         return (
-                            <FileCard file={item} />
+                            <FileCard handleDelete={handleDelete} file={item} />
                         )
                     }}
                 />

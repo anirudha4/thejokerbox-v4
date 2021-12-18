@@ -3,6 +3,7 @@ import For from "@components/common/For"
 import { routeConfig } from "./route.config"
 import Navbar from '@components/common/Navbar';
 import 'antd/dist/antd.css';
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import { useContext } from 'react';
 import { AuthContext } from '@contexts/AuthStore';
 

@@ -73,7 +73,10 @@ export const Subtitle = styled.h6`
 `;
 
 export const Button = styled.button`
-    padding: 1em 1.3em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: .8em 1em;
     border: none;
     outline: none;
     background-color: ${props => props.type && colors[props.type]};
@@ -118,7 +121,7 @@ export const CustomTabs = styled(Tabs)`
     }
 `;
 
-export const MenuItem = styled(Menu.Item)`
+export const MenuItem = styled(Menu.Item)`  
     padding: .8em 1em;
     margin: .3em;
     font-weight: ${fonts.weight.bold};
